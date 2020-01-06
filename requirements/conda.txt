@@ -1,0 +1,6 @@
+
+numpy
+cython
+pytest
+pytest-benchmark
+scikit-image
