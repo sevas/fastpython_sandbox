@@ -27,8 +27,6 @@ build:
     - bash ./build_clang_6.sh
     - cd $CI_PROJECT_DIR
     - python setup.py build_ext --inplace
-  dependencies:
-    - setup
   artifacts:
     untracked: true
     expire_in: 20 minutes
@@ -41,5 +39,3 @@ test:
     - find pylib/
     - export PYTHONPATH=.
     - pytest tests -v
-  dependencies:
-    - build
