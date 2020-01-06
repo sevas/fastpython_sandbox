@@ -5,7 +5,7 @@ before_script:
   - cat /etc/debian_version
   - apt-get update
   - apt-get install -y cmake
-  - apt-get install -y clang-6
+  - apt-get install -y clang-6.0
   - which cmake
   - which clang++-6.0
   - conda env create -n _env python=3.7 -f requirements/conda.txt
