@@ -1,11 +1,13 @@
 image: continuumio/miniconda3:latest
 
 before_script:
+  - uname -a
+  - cat /etc/debian_version
   - apt-get update
   - apt-get install -y cmake
-  - apt-get install -y clang-8
+  - apt-get install -y clang-6
   - which cmake
-  - which clang++-8
+  - which clang++-6.0
   - conda env create -n _env python=3.7 -f requirements/conda.txt
   - source activate _env
   - python -m pip install conan
@@ -19,7 +21,7 @@ stages:
 build:
   script:
     - cd nativelib/scripts
-    - bash ./build_clang_8.sh
+    - bash ./build_clang_6.sh
     - cd $CI_PROJECT_DIR
     - python setup.py build_ext --inplace
 
