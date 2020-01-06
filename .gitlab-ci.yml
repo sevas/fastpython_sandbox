@@ -1,21 +1,24 @@
 image: continuumio/miniconda3:latest
 
-before_script:
-  - uname -a
-  - cat /etc/debian_version
-  - apt-get update
-  - apt-get install -y cmake
-  - apt-get install -y clang-6.0
-  - which cmake
-  - which clang++-6.0
-  - conda env create -n _env python=3.7 -f requirements/conda.txt
-  - source activate _env
-  - python -m pip install conan
-
 
 stages:
+  - setup
   - build
   - test
+
+
+setup:
+  script:
+    - uname -a
+    - cat /etc/debian_version
+    - apt-get update
+    - apt-get install -y cmake
+    - apt-get install -y clang-6.0
+    - which cmake
+    - which clang++-6.0
+    - conda env create -n _env python=3.7 -f requirements/conda.txt
+    - source activate _env
+    - python -m pip install conan
 
 
 build:
@@ -24,9 +27,11 @@ build:
     - bash ./build_clang_6.sh
     - cd $CI_PROJECT_DIR
     - python setup.py build_ext --inplace
+  dependencies:
+    - setup
   artifacts:
     untracked: true
-    expire_in: 30 days
+    expire_in: 20 minutes
     paths:
       - pylib/*.so
       - pylib/*.pyd
@@ -36,3 +41,5 @@ test:
     - find pylib/
     - export PYTHONPATH=.
     - pytest tests -v
+  dependencies:
+    - build
