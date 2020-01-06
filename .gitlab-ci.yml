@@ -24,9 +24,15 @@ build:
     - bash ./build_clang_6.sh
     - cd $CI_PROJECT_DIR
     - python setup.py build_ext --inplace
-
+  artifacts:
+    untracked: true
+    expire_in: 30 days
+    paths:
+      - pylib/*.so
+      - pylib/*.pyd
 
 test:
   script:
+    - find pylib/
     - export PYTHONPATH=.
     - pytest tests -v
