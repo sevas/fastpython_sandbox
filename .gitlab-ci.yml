@@ -19,7 +19,7 @@ stages:
 build:
   script:
     - cd nativelib/scripts
-    - ./build.sh
+    - bash ./build.sh
     - cd $CI_PROJECT_DIR
     - python setup.py build_ext --inplace
 
