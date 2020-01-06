@@ -1,0 +1,12 @@
+image: continuumio/miniconda3:latest
+
+before_script:
+  - sudo apt-get install clang
+  - conda create -n _env python=3.7 -f requirements/conda.txt
+  - source activate _env
+
+build:
+  script:
+    - cd scripts
+    - ./build.sh
+
