@@ -1,14 +1,15 @@
 image: continuumio/miniconda3:latest
 
 before_script:
-  - pip install conan
   - apt-get update
   - apt-get install -y cmake
   - apt-get install -y gcc
   - which cmake
-  - which clang
+  - which gcc
   - conda create -n _env python=3.7 -f requirements/conda.txt
   - source activate _env
+  - python -m pip install conan
+
 
 build:
   script:
