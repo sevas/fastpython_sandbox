@@ -16,20 +16,12 @@ stages:
   - test
 
 
-build:cpp:
-  stage: build
+build:
   script:
     - cd nativelib/scripts
     - ./build.sh
-
-
-build:cython:
-  stage: build
-  script:
     - cd $CI_PROJECT_DIR
     - python setup.py build_ext --inplace
-  dependencies:
-    - build:cpp
 
 
 test:
