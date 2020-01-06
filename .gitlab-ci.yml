@@ -28,4 +28,5 @@ build:
 
 test:
   script:
+    - export PYTHONPATH=.
     - pytest tests -v
