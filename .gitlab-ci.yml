@@ -1,5 +1,8 @@
 image: continuumio/miniconda3:latest
 
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+
 
 stages:
   - setup
@@ -7,35 +10,50 @@ stages:
   - test
 
 
-setup:
+install-deps:
+  stage: setup
   script:
     - uname -a
     - cat /etc/debian_version
     - apt-get update
     - apt-get install -y cmake
     - apt-get install -y clang-6.0
-    - which cmake
-    - which clang++-6.0
     - conda env create -n _env python=3.7 -f requirements/conda.txt
     - source activate _env
     - python -m pip install conan
+    - conan --version
+    - cmake --version
+    - cython --version
 
 
-build:
+build-cython:
+  stage: build
   script:
     - cd nativelib/scripts
     - bash ./build_clang_6.sh
+  cache:
+    untracked: true
+    paths:
+      - ./pylib/*
+    key: build-cache
+
+build-cpp:
+  stage: build
+  script:
     - cd $CI_PROJECT_DIR
     - python setup.py build_ext --inplace
-  artifacts:
-    untracked: true
-    expire_in: 20 minutes
-    paths:
-      - pylib/*.so
-      - pylib/*.pyd
 
-test:
+  cache:
+    untracked: true
+    paths:
+      - ./*
+
+
+test:all:
+  stage: test
   script:
     - find pylib/
     - export PYTHONPATH=.
     - pytest tests -v
+  cache:
+    key: build-cache
