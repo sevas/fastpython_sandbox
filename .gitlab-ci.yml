@@ -26,7 +26,7 @@ install-deps:
     - cython --version
 
 
-build-cython:
+build-cpp:
   stage: build
   script:
     - cd nativelib/scripts
@@ -35,9 +35,9 @@ build-cython:
     untracked: true
     paths:
       - ./pylib/*
-    key: build-cache
+    key: ${CI_COMMIT_REF_SLUG}
 
-build-cpp:
+build-cython:
   stage: build
   script:
     - cd $CI_PROJECT_DIR
@@ -56,4 +56,4 @@ test:all:
     - export PYTHONPATH=.
     - pytest tests -v
   cache:
-    key: build-cache
+    key: ${CI_COMMIT_REF_SLUG}
