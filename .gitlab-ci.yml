@@ -69,6 +69,7 @@ build-cython:
     paths:
       - ~/conda_env
       - $CI_PROJECT_DIR/*
+    key: ${CI_COMMIT_REF_SLUG}
 
 
 test:all:
