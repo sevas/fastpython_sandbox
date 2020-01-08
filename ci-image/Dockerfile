@@ -12,4 +12,4 @@ RUN apt-get -qq update \
  
 # show versions
 RUN cmake --version \
- && cython --version
+ && clang --version
