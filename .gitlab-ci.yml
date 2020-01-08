@@ -5,28 +5,50 @@ cache:
 
 
 stages:
-  - setup
+  - docker
+  - conda
   - build
   - test
 
 
-install-deps:
-  stage: setup
+Docker build:
+  stage: docker
+  image: docker:latest
+  services:
+    - docker:dind # requirement for docker build
+  rules:
+    - changes:
+        - ci-image/*
+      when: always
   script:
-    - uname -a
-    - cat /etc/debian_version
-    - apt-get update
-    - apt-get install -y cmake
-    - apt-get install -y clang-6.0
-    - conda env create -n _env python=3.7 -f requirements/conda.txt
-    - source activate _env
+    - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - >
+      docker build
+      -t $CI_REGISTRY_IMAGE:latest
+      ./ci-image
+    - docker push $CI_REGISTRY_IMAGE:latest
+
+conda setup:
+  image: $CI_REGISTRY_IMAGE:latest
+  stage: conda
+  rules:
+      - changes:
+        - requirements/conda.txt
+        when: always
+  script:
+    - conda env create -p ~/conda_env python=3.7 -f requirements/conda.txt
+    - source activate ~/conda_env
     - python -m pip install conan
     - conan --version
-    - cmake --version
-    - cython --version
+  cache:
+    paths:
+      - ~/conda_env
+    key: ${CI_COMMIT_REF_SLUG}
 
 
 build-cpp:
+  image: $CI_REGISTRY_IMAGE:latest
   stage: build
   script:
     - cd nativelib/scripts
@@ -34,26 +56,35 @@ build-cpp:
   cache:
     untracked: true
     paths:
-      - ./pylib/*
+      - ~/conda_env
+      - $CI_PROJECT_DIR/pylib/*
     key: ${CI_COMMIT_REF_SLUG}
 
+
 build-cython:
+  image: $CI_REGISTRY_IMAGE:latest
   stage: build
   script:
-    - cd $CI_PROJECT_DIR
+    - source activate ~/conda_env
     - python setup.py build_ext --inplace
-
   cache:
     untracked: true
     paths:
-      - ./*
+      - ~/conda_env
+      - $CI_PROJECT_DIR/*
 
 
 test:all:
+  image: $CI_REGISTRY_IMAGE:latest
   stage: test
+  variables:
+    PYTHONPATH: .
   script:
     - find pylib/
-    - export PYTHONPATH=.
+    - source activate ~/conda_env
     - pytest tests -v
   cache:
     key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - ~/conda_env
+      - $CI_PROJECT_DIR/*
