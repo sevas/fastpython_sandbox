@@ -28,10 +28,10 @@ Docker build:
 conda setup:
   image: $CI_REGISTRY_IMAGE:latest
   stage: conda
-#  rules:
-#      - changes:
-#        - requirements/conda.txt
-#        when: always
+  rules:
+      - changes:
+        - requirements/conda.txt
+        when: always
   script:
     - conda env create -p $CI_PROJECT_DIR/_conda_env python=3.7 -f requirements/conda.txt
     - source activate $CI_PROJECT_DIR/_conda_env
@@ -42,6 +42,7 @@ conda setup:
     paths:
       - $CI_PROJECT_DIR/_conda_env
     key: ${CI_COMMIT_REF_SLUG}
+
 
 
 build-cpp:
@@ -81,7 +82,7 @@ test:all:
   script:
     - find pylib/
     - source activate $CI_PROJECT_DIR/_conda_env
-    - pytest tests -v
+    - pytest tests -v --cov
   cache:
     key: ${CI_COMMIT_REF_SLUG}
     paths:

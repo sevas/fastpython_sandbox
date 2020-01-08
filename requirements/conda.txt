@@ -3,4 +3,5 @@ numpy
 cython
 pytest
 pytest-benchmark
+pytest-cov
 scikit-image
