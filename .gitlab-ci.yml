@@ -104,11 +104,13 @@ package-all:
   stage: package
   script:
     - find pylib
+    - source activate $CI_PROJECT_DIR/_conda_env
+    - python setup.py bdist
 
   cache:
     key: ${CI_COMMIT_REF_SLUG}
 
   artifacts:
     paths:
-      - $CI_PROJECT_DIR/pylib
+      - $CI_PROJECT_DIR/dist
     expire_in: 30 days
