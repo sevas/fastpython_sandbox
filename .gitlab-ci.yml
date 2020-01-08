@@ -57,8 +57,11 @@ build-cpp:
     untracked: true
     paths:
       - $CI_PROJECT_DIR/_conda_env
-      - $CI_PROJECT_DIR/pylib/*
     key: ${CI_COMMIT_REF_SLUG}
+
+  artifacts:
+    paths:
+      - pylib/*.pyd
 
 
 build-cython:
@@ -71,9 +74,11 @@ build-cython:
     untracked: true
     paths:
       - $CI_PROJECT_DIR/_conda_env
-      - $CI_PROJECT_DIR/pylib/*
     key: ${CI_COMMIT_REF_SLUG}
 
+  artifacts:
+    paths:
+      - pylib/*.pyd
 
 test:all:
   image: $CI_REGISTRY_IMAGE:latest
@@ -88,7 +93,10 @@ test:all:
     key: ${CI_COMMIT_REF_SLUG}
     paths:
       - $CI_PROJECT_DIR/_conda_env
-      - $CI_PROJECT_DIR/pylib/*
+
+  dependencies:
+    - build-cython
+    - build-cpp
 
 
 package-all:
