@@ -61,7 +61,7 @@ build-cpp:
 
   artifacts:
     paths:
-      - pylib/*.pyd
+      - pylib/*.so
 
 
 build-cython:
@@ -78,7 +78,6 @@ build-cython:
 
   artifacts:
     paths:
-      - pylib/*.pyd
       - pylib/*.so
 
 test:all:
