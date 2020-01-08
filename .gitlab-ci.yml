@@ -79,6 +79,7 @@ build-cython:
   artifacts:
     paths:
       - pylib/*.pyd
+      - pylib/*.so
 
 test:all:
   image: $CI_REGISTRY_IMAGE:latest
