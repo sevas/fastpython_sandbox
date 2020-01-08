@@ -33,6 +33,7 @@ conda setup:
         - requirements/conda.txt
         when: always
   script:
+    - rm -rf $CI_PROJECT_DIR/_conda_env
     - conda env create -p $CI_PROJECT_DIR/_conda_env python=3.7 -f requirements/conda.txt
     - source activate $CI_PROJECT_DIR/_conda_env
     - python -m pip install conan
