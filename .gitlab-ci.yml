@@ -34,7 +34,7 @@ conda setup:
 #        when: always
   script:
     - conda env create -p $CI_PROJECT_DIR/_conda_env python=3.7 -f requirements/conda.txt
-    - source activate ~/conda_env
+    - source activate $CI_PROJECT_DIR/_conda_env
     - python -m pip install conan
     - conan --version
     - cython --version
