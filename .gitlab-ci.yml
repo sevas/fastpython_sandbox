@@ -33,14 +33,14 @@ conda setup:
 #        - requirements/conda.txt
 #        when: always
   script:
-    - conda env create -p ~/conda_env python=3.7 -f requirements/conda.txt
+    - conda env create -p $CI_PROJECT_DIR/_conda_env python=3.7 -f requirements/conda.txt
     - source activate ~/conda_env
     - python -m pip install conan
     - conan --version
     - cython --version
   cache:
     paths:
-      - ~/conda_env/*
+      - $CI_PROJECT_DIR/_conda_env
     key: ${CI_COMMIT_REF_SLUG}
 
 
@@ -48,12 +48,13 @@ build-cpp:
   image: $CI_REGISTRY_IMAGE:latest
   stage: build
   script:
+    - source activate $CI_PROJECT_DIR/_conda_env
     - cd nativelib/scripts
     - bash ./build_clang_6.sh
   cache:
     untracked: true
     paths:
-      - ~/conda_env/*
+      - $CI_PROJECT_DIR/_conda_env
       - $CI_PROJECT_DIR/pylib/*
     key: ${CI_COMMIT_REF_SLUG}
 
@@ -62,13 +63,13 @@ build-cython:
   image: $CI_REGISTRY_IMAGE:latest
   stage: build
   script:
-    - source activate ~/conda_env
+    - source activate $CI_PROJECT_DIR/_conda_env
     - python setup.py build_ext --inplace
   cache:
     untracked: true
     paths:
-      - ~/conda_env/*
-      - $CI_PROJECT_DIR/*
+      - $CI_PROJECT_DIR/_conda_env
+      - $CI_PROJECT_DIR/pylib/*
     key: ${CI_COMMIT_REF_SLUG}
 
 
@@ -79,13 +80,13 @@ test:all:
     PYTHONPATH: .
   script:
     - find pylib/
-    - source activate ~/conda_env
+    - source activate $CI_PROJECT_DIR/_conda_env
     - pytest tests -v
   cache:
     key: ${CI_COMMIT_REF_SLUG}
     paths:
-      - ~/conda_env
-      - $CI_PROJECT_DIR/*
+      - $CI_PROJECT_DIR/_conda_env
+      - $CI_PROJECT_DIR/pylib/*
 
 
 package-all:
