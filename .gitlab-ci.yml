@@ -1,14 +1,10 @@
-image: continuumio/miniconda3:latest
-
-cache:
-  key: ${CI_COMMIT_REF_SLUG}
-
 
 stages:
   - docker
   - conda
   - build
   - test
+  - package
 
 
 Docker build:
@@ -41,6 +37,7 @@ conda setup:
     - source activate ~/conda_env
     - python -m pip install conan
     - conan --version
+    - cython --version
   cache:
     paths:
       - ~/conda_env
@@ -88,3 +85,19 @@ test:all:
     paths:
       - ~/conda_env
       - $CI_PROJECT_DIR/*
+
+
+package-all:
+  stage: package
+  script:
+    - find pylib
+
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - $CI_PROJECT_DIR/*
+
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/pylib
+    expire_in: 30 days
