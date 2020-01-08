@@ -28,10 +28,10 @@ Docker build:
 conda setup:
   image: $CI_REGISTRY_IMAGE:latest
   stage: conda
-  rules:
-      - changes:
-        - requirements/conda.txt
-        when: always
+#  rules:
+#      - changes:
+#        - requirements/conda.txt
+#        when: always
   script:
     - conda env create -p ~/conda_env python=3.7 -f requirements/conda.txt
     - source activate ~/conda_env
