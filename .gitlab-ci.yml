@@ -109,6 +109,9 @@ package-all:
 
   cache:
     key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - $CI_PROJECT_DIR/_conda_env
+
 
   artifacts:
     paths:
