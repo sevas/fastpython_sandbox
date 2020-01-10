@@ -26,3 +26,9 @@ def test_sobel_skimage(im, benchmark):
 def test_sobel_cy(im, benchmark):
     out = np.zeros_like(im)
     benchmark(sobel_cy.sobel, im, out)
+
+
+@pytest.mark.benchmark(group="sobel-filter")
+def test_sobel_cpp_pb11(im, benchmark):
+    out = np.zeros_like(im)
+    benchmark(mylib.sobel, im, out)

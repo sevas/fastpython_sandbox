@@ -34,7 +34,7 @@ int sum_int(const std::vector<int>& values)
 
     auto after = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(after - before).count();
-    std::cout << "[sum_int] elapsed: " << elapsed << " us" << std::endl;
+    // std::cout << "[sum_int] elapsed: " << elapsed << " us" << std::endl;
     return s;
 }
 
@@ -45,7 +45,7 @@ int sum_int_pyarray(const py::array_t<int>& values)
     const auto n = values.size();
     int s = 0;
 
-    auto *p = values.data();
+    auto* p = values.data();
 
     for (auto i = 0u; i < n; ++i)
     {
@@ -54,7 +54,7 @@ int sum_int_pyarray(const py::array_t<int>& values)
 
     auto after = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(after - before).count();
-    std::cout << "[sum_int_pyarray] elapsed: " << elapsed << " us" << std::endl;
+    // std::cout << "[sum_int_pyarray] elapsed: " << elapsed << " us" << std::endl;
     return s;
 }
 
@@ -72,7 +72,7 @@ int sum_eigen_i(Eigen::MatrixXi& m)
 
     auto after = std::chrono::high_resolution_clock::now();
     auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(after - before).count();
-    std::cout << "[sum_eigen_i] elapsed: " << elapsed << " us" << std::endl;
+    // std::cout << "[sum_eigen_i] elapsed: " << elapsed << " us" << std::endl;
 
     return sum;
 }
@@ -89,7 +89,7 @@ void array_add_scalar_stl(std::vector<float>& in, const float val)
 
 void array_add_scalar_eigen(Eigen::MatrixXf& in, const float val)
 {
-    std::cout << "ptr: " << &in << std::endl;
+    // std::cout << "ptr: " << &in << std::endl;
 
     Eigen::MatrixXf values(in.rows(), in.cols());
     values.setConstant(val);
@@ -170,6 +170,60 @@ std::vector<float> get_vector_float(data_manager& dm, const std::string& name) {
 
 std::vector<double> get_vector_double(data_manager& dm, const std::string& name) { return dm.get_data<double>(name); }
 
+static int k_x[3][3] = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
+
+static int k_y[3][3] = {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}};
+
+static int neighbour_idx[3][3][2] = {
+    {{-1, -1}, {-1, 0}, {-1, 1}},
+    {{0, -1}, {0, 0}, {0, 1}},
+    {{1, -1}, {1, 0}, {1, 1}},
+};
+
+void sobel(py::array_t<unsigned char>& in, py::array_t<unsigned char>& out)
+{
+    // h, w = im.shape
+    // for y in range(1, h-1):
+    //     for x in range(1, w-1):
+    //         x_val = 0
+    //         y_val = 0
+    //         for yy in range(3):
+    //             for xx in range(3):
+    //                 dx, dy = neighbour_idx[yy, xx]
+    //                 x_val += k_x[yy, xx] * im[y+dy, x+dx]
+    //                 y_val += k_y[yy, xx] * im[y+dy, x+dx]
+
+    //         out[y, x] = m.sqrt(x_val*x_val + y_val*y_val)
+    const auto h = in.shape()[0] - 1;
+    const auto w = in.shape()[1] - 1;
+
+    for (auto i = 1; i < h; ++i)
+    {
+        for (auto j = 1; j < w; ++j)
+        {
+            unsigned char x_val = 0;
+            unsigned char y_val = 0;
+            for (auto ii = 0u; ii < 3; ++ii)
+            {
+                for (auto jj = 0u; jj < 3; ++jj)
+                {
+                    const int dy = neighbour_idx[ii][jj][0];
+                    const int dx = neighbour_idx[ii][jj][1];
+                    const auto in_value = in.at(i + dy, j + dx);
+                    x_val += k_x[ii][jj] * in_value;
+                    y_val += k_y[ii][jj] * in_value;
+                }
+            }
+            auto value = static_cast<int>(sqrt(x_val * x_val + y_val * y_val));
+            if (value > 255)
+            {
+                value = 255;
+            }
+            out.mutable_at(i, j) = static_cast<unsigned char>(value);
+        }
+    }
+}
+
 #ifdef _DEBUG
 #define PY_MODULE_NAME mylib_d
 #else
@@ -202,4 +256,6 @@ PYBIND11_MODULE(PY_MODULE_NAME, m)
     m.def("get_vector_int", &get_vector_int);
     m.def("get_vector_float", &get_vector_float);
     m.def("get_vector_double", &get_vector_double);
+
+    m.def("sobel", &sobel);
 }
