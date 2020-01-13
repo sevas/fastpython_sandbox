@@ -4,9 +4,9 @@ stages:
   - conda
   - build
   - test
-#  - package
+  - package
 
-
+ 
 Docker build:
   stage: docker
   image: docker:latest
@@ -100,20 +100,20 @@ test:all:
     - build-cpp
 
 
-#package-all:
-#  stage: package
-#  script:
-#    - find pylib
-#    - source activate $CI_PROJECT_DIR/_conda_env
-#    - python setup.py bdist
-#
-#  cache:
-#    key: ${CI_COMMIT_REF_SLUG}
-#    paths:
-#      - $CI_PROJECT_DIR/_conda_env
-#
-#
-#  artifacts:
-#    paths:
-#      - $CI_PROJECT_DIR/dist
-#    expire_in: 30 days
+package-all:
+  stage: package
+  script:
+    - find pylib
+    - source activate $CI_PROJECT_DIR/_conda_env
+    - python setup.py bdist
+
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}
+    paths:
+      - $CI_PROJECT_DIR/_conda_env
+
+
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/dist
+    expire_in: 30 days
