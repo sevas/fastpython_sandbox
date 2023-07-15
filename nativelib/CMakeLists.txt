@@ -1,23 +1,35 @@
+cmake_minimum_required(VERSION 3.19)
+
 project(nativelib_pb11)
-cmake_minimum_required(VERSION 3.6)
+set(CMAKE_CXX_STANDARD 17)
 
-include(${CMAKE_SOURCE_DIR}/_conan/conanbuildinfo.cmake)
+message(">>>>>>> ${CONDA_ENV_NAME}")
 
 
-if(${CMAKE_VERSION} VERSION_LESS "3.12.0")
-    find_package(PythonInterp)
-    find_package(PythonLibs)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR})
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR})
 
-    set(Python_INCLUDE_DIRS ${PYTHON_INCLUDE_DIR})
-    set(Python_LIBRARY_RELEASE ${PYTHON_LIBRARY})
-else()
-    set(Python_FIND_REGISTRY NEVER)
-    find_package(Python COMPONENTS Development)
+include(cmake/configure_python.cmake)
+include(cmake/conan.cmake)
 
-endif()
+conan_cmake_configure(
+    REQUIRES
+        pybind11/2.9.2
+        eigen/3.3.7
+    GENERATORS
+        CMakeDeps)
 
-message("PYTHON INC DIR: ${Python_INCLUDE_DIRS}")
-message("PYTHON LIB : ${Python_LIBRARY_RELEASE}")
+conan_cmake_autodetect(settings)
+
+conan_cmake_install(PATH_OR_REFERENCE .
+                    BUILD missing
+                    REMOTE conancenter
+                    SETTINGS ${settings})
+
+find_package(pybind11 CONFIG REQUIRED)
+find_package(Eigen3 CONFIG REQUIRED)
+
+
 
 
 add_subdirectory(src/lib)

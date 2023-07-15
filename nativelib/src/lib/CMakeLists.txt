@@ -1,14 +1,18 @@
-add_library(mylib SHARED mylib.cpp mylib.h)
+Python_add_library(mylib MODULE WITH_SOABI mylib.cpp mylib.h)
+
 
 target_include_directories(mylib PRIVATE 
-	${CONAN_INCLUDE_DIRS} 
 	${Python_INCLUDE_DIRS})
 
-target_link_libraries(mylib PRIVATE ${Python_LIBRARY_RELEASE})
+target_link_libraries(mylib PRIVATE
+    ${Python_LIBRARY_RELEASE}
+    Eigen3::Eigen
+    pybind11::pybind11
+    )
 set_target_properties(mylib PROPERTIES DEBUG_POSTFIX _d)
 
 if(UNIX)
-    set_target_properties(mylib PROPERTIES PREFIX "")
+#    set_target_properties(mylib PROPERTIES PREFIX "")
 elseif(WIN32)
     set_target_properties(mylib PROPERTIES SUFFIX .pyd)
 endif()
