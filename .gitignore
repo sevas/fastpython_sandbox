@@ -1,8 +1,10 @@
 .idea/
 build/
-nativelib/_build_*
+nativelib/_build*
 nativelib/_conan/*
 pylib/*.c
 pylib/*.pyd
 pylib/*.html
 */__pycache__/*
+
+cmake-build-*/
