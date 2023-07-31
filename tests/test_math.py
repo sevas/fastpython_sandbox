@@ -1,13 +1,13 @@
 
 import pytest
 import numpy as np
-from pylib import math, math_cy
+from pylib import mynumeric, math_cy
 from pylib import mylib as mylib
 
 
 @pytest.mark.benchmark(group="sum-of-ints")
 def test_math(benchmark):
-    benchmark(math.sum, 0, 1e7)
+    benchmark(mynumeric.sum, 0, 1e7)
 
 
 @pytest.mark.benchmark(group="sum-of-ints")

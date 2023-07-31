@@ -1,7 +1,5 @@
-
-
-def sum(lo : int, hi : int) -> int:
-    i = lo   # type: int
+def sum(lo: int, hi: int) -> int:
+    i = lo  # type: int
     out = 0  # type: int
 
     while True:
@@ -11,5 +9,3 @@ def sum(lo : int, hi : int) -> int:
             break
 
     return out
-
-
