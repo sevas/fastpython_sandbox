@@ -4,6 +4,7 @@ nativelib/_build*
 nativelib/_conan/*
 pylib/*.c
 pylib/*.pyd
+pylib/*.so
 pylib/*.html
 */__pycache__/*
 
