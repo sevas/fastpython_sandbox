@@ -1,10 +1,11 @@
 import pytest
 import numpy as np
-from pylib import sobel, sobel_cy
-from pylib import mylib as mylib
+from pylib import sobel, sobel_cy, sobel_py, sobel_nb, sobel_nb_aot_built
+# from pylib import mylib as mylib
 
 from skimage import data
 from skimage import filters
+
 
 @pytest.fixture()
 def im():
@@ -12,9 +13,15 @@ def im():
 
 
 @pytest.mark.benchmark(group="sobel-filter")
-def test_sobel_py(im, benchmark):
+def test_sobel_py_cythonized(im, benchmark):
     out = np.zeros_like(im)
     benchmark(sobel.sobel, im, out)
+
+
+@pytest.mark.benchmark(group="sobel-filter")
+def test_sobel_py(im, benchmark):
+    out = np.zeros_like(im)
+    benchmark(sobel_py.sobel, im, out)
 
 
 @pytest.mark.benchmark(group="sobel-filter")
@@ -29,6 +36,19 @@ def test_sobel_cy(im, benchmark):
 
 
 @pytest.mark.benchmark(group="sobel-filter")
-def test_sobel_cpp_pb11(im, benchmark):
+def test_sobel_numba(im, benchmark):
     out = np.zeros_like(im)
-    benchmark(mylib.sobel, im, out)
+    benchmark(sobel_nb.sobel, im, out)
+
+
+@pytest.mark.benchmark(group="sobel-filter")
+def test_sobel_numba_aot(im, benchmark):
+    out = np.zeros_like(im)
+    benchmark(sobel_nb_aot_built.sobel, im, out)
+
+
+#
+# @pytest.mark.benchmark(group="sobel-filter")
+# def test_sobel_cpp_pb11(im, benchmark):
+#     out = np.zeros_like(im)
+#     benchmark(mylib.sobel, im, out)
